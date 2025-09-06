@@ -1,0 +1,13 @@
+query SeasonalPies {
+  category(id: "seasonal") {
+    id
+    name
+    pies(limit: 5, sort: RATING_DESC) {
+      id
+      name
+      price
+      imageUrl
+      averageRating
+    }
+  }
+}
