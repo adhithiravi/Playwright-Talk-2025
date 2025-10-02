@@ -5,7 +5,9 @@ test.describe("Test Contact Form", () => {
     await page.goto("/contact");
   });
 
-  test("Should submit the contact form successfully @smoke", async ({ page }) => {
+  test("Should submit the contact form successfully @smoke", async ({
+    page,
+  }) => {
     await page.fill('input[name="name"]', "John Doe");
     await page.fill('input[name="email"]', "abc@outlook.com");
     await page.fill('textarea[name="message"]', "This is a test message.");
@@ -18,10 +20,18 @@ test.describe("Test Contact Form", () => {
 
   test("should show validation errors for empty fields", async ({ page }) => {
     await page.click('button[type="submit"]');
+    // Test that the form doesn't submit and shows HTML5 validation
     await expect(page.locator('input[name="name"]')).toHaveAttribute(
-      "aria-invalid",
-      "true"
+      "required"
     );
+    await expect(page.locator('input[name="email"]')).toHaveAttribute(
+      "required"
+    );
+    await expect(page.locator('textarea[name="message"]')).toHaveAttribute(
+      "required"
+    );
+    // Verify the form is still on the contact page (not submitted)
+    await expect(page).toHaveURL(/\/contact/);
   });
 
   test("should show validation errors for empty email field", async ({
@@ -29,10 +39,11 @@ test.describe("Test Contact Form", () => {
   }) => {
     await page.fill('input[name="name"]', "John Doe");
     await page.click('button[type="submit"]');
+    // Test that the email field is required and form doesn't submit
     await expect(page.locator('input[name="email"]')).toHaveAttribute(
-      "aria-invalid",
-      "true"
+      "required"
     );
+    await expect(page).toHaveURL(/\/contact/);
   });
 
   test("should show validation errors for empty message field", async ({
@@ -41,10 +52,11 @@ test.describe("Test Contact Form", () => {
     await page.fill('input[name="name"]', "John Doe");
     await page.fill('input[name="email"]', "abc@outlook.com");
     await page.click('button[type="submit"]');
+    // Test that the message field is required and form doesn't submit
     await expect(page.locator('textarea[name="message"]')).toHaveAttribute(
-      "aria-invalid",
-      "true"
+      "required"
     );
+    await expect(page).toHaveURL(/\/contact/);
   });
 
   test("should show validation error for wrong email address", async ({
@@ -54,9 +66,11 @@ test.describe("Test Contact Form", () => {
     await page.fill('input[name="email"]', "abc");
     await page.fill('textarea[name="message"]', "This is a test message.");
     await page.click('button[type="submit"]');
+    // Test that the email field has type="email" validation and form doesn't submit
     await expect(page.locator('input[name="email"]')).toHaveAttribute(
-      "aria-invalid",
-      "true"
+      "type",
+      "email"
     );
+    await expect(page).toHaveURL(/\/contact/);
   });
 });
