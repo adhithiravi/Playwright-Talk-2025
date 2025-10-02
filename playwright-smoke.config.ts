@@ -5,11 +5,10 @@ export default defineConfig({
   timeout: 30 * 1000,
   expect: { timeout: 10000 },
   fullyParallel: true,
-  retries: 2,
+  retries: 1, // Fewer retries for smoke tests
   reporter: [
     ["list"],
     ["html", { outputFolder: "playwright-report", open: "never" }],
-    ["json", { outputFile: "test-results/results.json" }],
   ],
   use: {
     baseURL: "http://localhost:3000",
@@ -18,21 +17,11 @@ export default defineConfig({
     actionTimeout: 10000,
     navigationTimeout: 30000,
     screenshot: "only-on-failure",
-    video: "retain-on-failure",
   },
   projects: [
-    { 
-      name: "chromium", 
-      use: { ...devices["Desktop Chrome"] } 
-    },
-    // Add more browsers for full test suite
     {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
 });

@@ -1,56 +1,71 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Navigate to Shop Pages', () => {
+test.describe("Navigate to Shop Pages", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto("/");
   });
 
-  test('should navigate to All Pies page, and load pies', async ({ page }) => {
-    await page.locator('button', { hasText: 'Shop' }).click();
-    await page.locator('a', { hasText: 'All Pies' }).click();
+  test("should navigate to All Pies page, and load pies @smoke", async ({ page }) => {
+    await page.locator("button", { hasText: "Shop" }).click();
+    await page.locator("a", { hasText: "All Pies" }).click();
     await expect(page).toHaveURL(/\/shop/);
-    await expect(page.locator('h1', { hasText: 'All Pies' })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("h1", { hasText: "All Pies" })).toBeVisible();
   });
 
-  test('should navigate to Fruit Pies page, and load fruit pies', async ({ page }) => {
-    await page.locator('button', { hasText: 'Shop' }).click();
-    await page.locator('a', { hasText: 'Fruit Pies' }).click();
+  test("should navigate to Fruit Pies page, and load fruit pies", async ({
+    page,
+  }) => {
+    await page.locator("button", { hasText: "Shop" }).click();
+    await page.locator("a", { hasText: "Fruit Pies" }).click();
     await expect(page).toHaveURL(/\/shop\/fruit/);
-    await expect(page.locator('h1', { hasText: 'Fruit Pies' })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("h1", { hasText: "Fruit Pies" })).toBeVisible();
   });
 
-  test('should navigate to Seasonal Pies page, and load seasonal pies', async ({ page }) => {
-    await page.locator('button', { hasText: 'Shop' }).click();
-    await page.locator('a', { hasText: 'Seasonal Pies' }).click();
+  test("should navigate to Seasonal Pies page, and load seasonal pies", async ({
+    page,
+  }) => {
+    await page.locator("button", { hasText: "Shop" }).click();
+    await page.locator("a", { hasText: "Seasonal Pies" }).click();
     await expect(page).toHaveURL(/\/shop\/seasonal/);
-    await expect(page.locator('h1', { hasText: 'Seasonal Pies' })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(
+      page.locator("h1", { hasText: "Seasonal Pies" })
+    ).toBeVisible();
   });
 
-  test('should navigate to Cheesecakes page, and load Cheesecakes', async ({ page }) => {
-    await page.locator('button', { hasText: 'Shop' }).click();
-    await page.locator('a', { hasText: 'Cheesecakes' }).click();
+  test("should navigate to Cheesecakes page, and load Cheesecakes", async ({
+    page,
+  }) => {
+    await page.locator("button", { hasText: "Shop" }).click();
+    await page.locator("a", { hasText: "Cheesecakes" }).click();
     await expect(page).toHaveURL(/\/shop\/cheesecake/);
-    await expect(page.locator('h1', { hasText: 'Cheesecakes' })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("h1", { hasText: "Cheesecakes" })).toBeVisible();
   });
 });
 
-test.describe('Navigate to Other Pages', () => {
+test.describe("Navigate to Other Pages", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto("/");
   });
 
-  test('should navigate to contact page', async ({ page }) => {
-    await page.goto('/contact');
+  test("should navigate to contact page @smoke", async ({ page }) => {
+    await page.goto("/contact");
     await expect(page).toHaveURL(/\/contact/);
+    await page.waitForLoadState("networkidle");
   });
 
-  test('should navigate to register page', async ({ page }) => {
-    await page.goto('/register');
+  test("should navigate to register page", async ({ page }) => {
+    await page.goto("/register");
     await expect(page).toHaveURL(/\/register/);
+    await page.waitForLoadState("networkidle");
   });
 
-  test('should navigate to cart page', async ({ page }) => {
-    await page.goto('/cart');
+  test("should navigate to cart page", async ({ page }) => {
+    await page.goto("/cart");
     await expect(page).toHaveURL(/\/cart/);
+    await page.waitForLoadState("networkidle");
   });
 });

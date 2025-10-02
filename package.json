@@ -7,8 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:run": "npx playwright test",
-    "test:ui-run": "npx playwright test --ui"
+    "test": "npx playwright test",
+    "test:smoke": "npx playwright test --config=playwright-smoke.config.ts --grep @smoke",
+    "test:ui": "npx playwright test --ui",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:report": "npx playwright show-report"
   },
   "dependencies": {
     "@next/bundle-analyzer": "^15.2.4",
