@@ -5,7 +5,9 @@ test.describe("Navigate to Shop Pages", () => {
     await page.goto("/");
   });
 
-  test("should navigate to All Pies page, and load pies @smoke", async ({ page }) => {
+  test("should navigate to All Pies page, and load pies @smoke", async ({
+    page,
+  }) => {
     await page.locator("button", { hasText: "Shop" }).click();
     await page.locator("a", { hasText: "All Pies" }).click();
     await expect(page).toHaveURL(/\/shop/);
