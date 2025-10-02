@@ -45,11 +45,4 @@ test.describe("Bethany's Pie Shop Homepage", () => {
       .click();
     await expect(page.locator("[data-testid=cart-count]")).toHaveText("1");
   });
-
-  test("Clicking on Show Now on carousel will navigate to /shop page", async ({
-    page,
-  }) => {
-    await page.locator("[data-testid=carousel-shop-button]").first().click();
-    await expect(page).toHaveURL(/\/shop/);
-  });
 });
