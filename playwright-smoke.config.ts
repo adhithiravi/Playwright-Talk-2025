@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 30 * 1000,
   expect: { timeout: 10000 },
   fullyParallel: true,
+  workers: process.env.CI ? 2 : undefined, // Use 2 workers in CI for smoke tests
   retries: 1, // Fewer retries for smoke tests
   reporter: [
     ["list"],

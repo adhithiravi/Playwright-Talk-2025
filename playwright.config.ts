@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 30 * 1000,
   expect: { timeout: 10000 },
   fullyParallel: true,
+  workers: process.env.CI ? 4 : undefined, // Use 4 workers in CI, auto-detect locally
   retries: 2,
   reporter: [
     ["list"],
@@ -21,9 +22,9 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   projects: [
-    { 
-      name: "chromium", 
-      use: { ...devices["Desktop Chrome"] } 
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
     // Add more browsers for full test suite
     {
