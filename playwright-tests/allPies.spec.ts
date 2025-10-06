@@ -1,15 +1,25 @@
 import { test, expect } from "@playwright/test";
-import { reviewCart } from "./test-helpers";
+import {
+  reviewCart,
+  addAllItemsToCart,
+  clearCartState,
+  waitForPageLoad,
+} from "./test-helpers";
+import { stubPiesAPI, getExpectedCounts } from "./api-mocks";
 
 test.describe("All Pies Shop Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.route("**/api/pies", (route) => route.continue());
+    // Clear cart state
+    await clearCartState(page);
+
+    // Stub the API with consistent data
+    await stubPiesAPI(page);
+
+    // Navigate to the shop page
     await page.goto("/shop");
-    await page.waitForLoadState("networkidle");
-    const res = await page.request.get("/api/pies");
-    expect(res.status()).toBe(200);
-    const body = await res.json();
-    expect(body.length).toBeGreaterThan(0);
+
+    // Wait for page to load with expected content
+    await waitForPageLoad(page, "All Pies");
   });
 
   test("renders the All Pies section", async ({ page }) => {
@@ -19,6 +29,11 @@ test.describe("All Pies Shop Page", () => {
   test("renders all All Pies with name and price", async ({ page }) => {
     const items = page.locator("[data-testid=pie-item]");
     const count = await items.count();
+    const expectedCount = getExpectedCounts().all;
+
+    // Verify we have the expected number of items
+    expect(count).toBe(expectedCount);
+
     for (let i = 0; i < count; i++) {
       const el = items.nth(i);
       await expect(el.locator("h3")).toBeVisible();
@@ -31,14 +46,14 @@ test.describe("All Pies Shop Page", () => {
   }) => {
     const items = page.locator("[data-testid=pie-item]");
     const count = await items.count();
-    for (let i = 0; i < count; i++) {
-      await items.nth(i).locator("button", { hasText: "Add to Cart" }).click();
-      // Wait for cart to update
-      await page.waitForTimeout(100);
-    }
-    await expect(page.locator("[data-testid=cart-count]")).toHaveText(
-      String(count)
-    );
-    await reviewCart(page, count);
+    const expectedCount = getExpectedCounts().all;
+
+    // Verify we have the expected number of items
+    expect(count).toBe(expectedCount);
+
+    // Add all items to cart
+    await addAllItemsToCart(page, expectedCount);
+
+    await reviewCart(page, expectedCount);
   });
 });
