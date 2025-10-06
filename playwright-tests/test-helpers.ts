@@ -3,9 +3,9 @@ import { Page, expect } from "@playwright/test";
 export async function reviewCart(page: Page, expectedCount: number) {
   // Click cart link with better locator
   await page.getByRole("link", { name: "Cart" }).click();
-  await expect(page).toHaveURL(/\/cart/);
 
-  // Wait for cart to load completely
+  // Wait for navigation to complete
+  await page.waitForURL(/\/cart/);
   await page.waitForLoadState("networkidle");
 
   // Wait for cart items to be visible
@@ -60,14 +60,17 @@ export async function addAllItemsToCart(page: Page, expectedCount: number) {
 }
 
 export async function clearCartState(page: Page) {
-  // Clear cart by setting localStorage and refreshing
+  // Navigate to home page first
   await page.goto("/");
+  await page.waitForLoadState("domcontentloaded");
+
+  // Clear cart by setting localStorage after page is loaded
   await page.evaluate(() => {
     localStorage.setItem("cart", JSON.stringify([]));
   });
-  await page.reload();
 
-  // Wait for page to be ready
+  // Reload to ensure the cart state is cleared
+  await page.reload();
   await page.waitForLoadState("domcontentloaded");
 
   // Verify cart is empty
