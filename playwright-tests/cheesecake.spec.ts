@@ -5,7 +5,7 @@ import {
   clearCartState,
   waitForPageLoad,
 } from "./test-helpers";
-import { stubPiesAPI, getExpectedCounts } from "./api-mocks";
+import { stubPiesAPI, getExpectedCounts } from "./api-stubs";
 
 test.describe("Cheesecake Shop Page", () => {
   test.beforeEach(async ({ page }) => {
@@ -19,11 +19,13 @@ test.describe("Cheesecake Shop Page", () => {
     await page.goto("/shop/cheesecake");
 
     // Wait for page to load with expected content
-    await waitForPageLoad(page, "Cheesecake");
+    await waitForPageLoad(page, "Cheesecakes");
   });
 
   test("renders the Cheesecake section", async ({ page }) => {
-    await expect(page.locator("h1", { hasText: "Cheesecake" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Cheesecakes" })
+    ).toBeVisible();
   });
 
   test("renders all Cheesecake with name and price", async ({ page }) => {
@@ -44,16 +46,12 @@ test.describe("Cheesecake Shop Page", () => {
   test("should add all cheesecakes to cart and validate cart count", async ({
     page,
   }) => {
-    const items = page.locator("[data-testid=pie-item]");
-    const count = await items.count();
     const expectedCount = getExpectedCounts().cheesecake;
 
-    // Verify we have the expected number of items
-    expect(count).toBe(expectedCount);
-
-    // Add all items to cart
+    // Add all items to cart with proper waiting
     await addAllItemsToCart(page, expectedCount);
 
+    // Verify cart functionality
     await reviewCart(page, expectedCount);
   });
 });

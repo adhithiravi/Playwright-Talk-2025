@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
 
-// Mock data that matches the API structure
+// Mock data that matches the API structure exactly
 export const mockPies = [
   // Seasonal Pies
   {

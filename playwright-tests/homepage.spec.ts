@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { waitForCartCount, clearCartState } from "./test-helpers";
-import { stubPiesOfTheMonthAPI, getExpectedCounts } from "./api-mocks";
+import {
+  waitForCartCount,
+  clearCartState,
+  addItemToCart,
+} from "./test-helpers";
+import { stubPiesOfTheMonthAPI, getExpectedCounts } from "./api-stubs";
 
 test.describe("Bethany's Pie Shop Homepage", () => {
   test.beforeEach(async ({ page }) => {
@@ -56,11 +60,8 @@ test.describe("Bethany's Pie Shop Homepage", () => {
   });
 
   test("can add a pie of the month to the cart @smoke", async ({ page }) => {
-    await page
-      .locator("[data-testid=pie-item]")
-      .first()
-      .locator("button", { hasText: "Add to Cart" })
-      .click();
+    const firstItem = page.locator("[data-testid=pie-item]").first();
+    await addItemToCart(page, firstItem);
     await waitForCartCount(page, 1);
   });
 });

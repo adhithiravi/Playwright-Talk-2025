@@ -1,15 +1,18 @@
 import { Page, expect } from "@playwright/test";
 
 export async function reviewCart(page: Page, expectedCount: number) {
-  await page.locator("a", { hasText: "Cart" }).click();
+  // Click cart link with better locator
+  await page.getByRole("link", { name: "Cart" }).click();
   await expect(page).toHaveURL(/\/cart/);
 
-  // Wait for cart to load
+  // Wait for cart to load completely
   await page.waitForLoadState("networkidle");
 
+  // Wait for cart items to be visible
   const items = page.locator("[data-testid=cart-items]");
   await expect(items).toHaveCount(expectedCount);
 
+  // Verify each cart item has required elements
   for (let i = 0; i < expectedCount; i++) {
     const item = items.nth(i);
     await expect(item.locator("h3")).toBeVisible();
@@ -18,23 +21,23 @@ export async function reviewCart(page: Page, expectedCount: number) {
 }
 
 export async function waitForCartCount(page: Page, expectedCount: number) {
-  // Wait for cart count to be visible and have the expected value
   if (expectedCount > 0) {
+    // Wait for cart count to appear and have correct value
     await expect(page.locator("[data-testid=cart-count]")).toBeVisible();
     await expect(page.locator("[data-testid=cart-count]")).toHaveText(
       String(expectedCount)
     );
   } else {
-    // When count is 0, the cart count element should not be visible
+    // When count is 0, cart count should not be visible
     await expect(page.locator("[data-testid=cart-count]")).not.toBeVisible();
   }
 }
 
-export async function addItemToCartAndWait(page: Page, itemLocator: any) {
+export async function addItemToCart(page: Page, itemLocator: any) {
   // Click the add to cart button
-  await itemLocator.locator("button", { hasText: "Add to Cart" }).click();
+  await itemLocator.getByRole("button", { name: "Add to Cart" }).click();
 
-  // Wait for the cart count to appear (it only shows when count > 0)
+  // Wait for cart count to appear (indicates successful addition)
   await page.waitForFunction(
     () => {
       const cartCount = document.querySelector('[data-testid="cart-count"]');
@@ -49,39 +52,36 @@ export async function addAllItemsToCart(page: Page, expectedCount: number) {
 
   // Add all items to cart
   for (let i = 0; i < expectedCount; i++) {
-    await items.nth(i).locator("button", { hasText: "Add to Cart" }).click();
-    // Small delay to allow React state to update
-    await page.waitForTimeout(100);
+    await addItemToCart(page, items.nth(i));
   }
 
-  // Wait for cart count to be visible and have the correct value
-  await expect(page.locator("[data-testid=cart-count]")).toBeVisible();
-  await expect(page.locator("[data-testid=cart-count]")).toHaveText(
-    String(expectedCount)
-  );
+  // Verify final cart count
+  await waitForCartCount(page, expectedCount);
 }
 
 export async function clearCartState(page: Page) {
-  // Clear cart by setting localStorage and refreshing the page
+  // Clear cart by setting localStorage and refreshing
   await page.goto("/");
   await page.evaluate(() => {
     localStorage.setItem("cart", JSON.stringify([]));
   });
-  await page.reload(); // Force reload to clear any React state
+  await page.reload();
 
-  // Wait for the page to be ready
+  // Wait for page to be ready
   await page.waitForLoadState("domcontentloaded");
 
-  // Verify cart is empty by checking that cart count is not visible
+  // Verify cart is empty
   await expect(page.locator("[data-testid=cart-count]")).not.toBeVisible();
 }
 
 export async function waitForPageLoad(page: Page, expectedTitle: string) {
-  // Wait for the page to load completely
+  // Wait for network to be idle
   await page.waitForLoadState("networkidle");
 
   // Wait for the expected title to be visible
-  await expect(page.locator("h1", { hasText: expectedTitle })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: expectedTitle })
+  ).toBeVisible();
 
   // Wait for pie items to be loaded
   await expect(page.locator("[data-testid=pie-item]").first()).toBeVisible();

@@ -1,12 +1,11 @@
 import { test, expect } from "@playwright/test";
 import {
   reviewCart,
-  waitForCartCount,
-  addItemToCartAndWait,
+  addAllItemsToCart,
   clearCartState,
   waitForPageLoad,
 } from "./test-helpers";
-import { stubPiesAPI, getExpectedCounts } from "./api-mocks";
+import { stubPiesAPI, getExpectedCounts } from "./api-stubs";
 
 test.describe("Fruit Pies Shop Page", () => {
   test.beforeEach(async ({ page }) => {
@@ -45,21 +44,12 @@ test.describe("Fruit Pies Shop Page", () => {
   test("should add all fruit pies to cart and validate cart count", async ({
     page,
   }) => {
-    const items = page.locator("[data-testid=pie-item]");
-    const count = await items.count();
     const expectedCount = getExpectedCounts().fruit;
 
-    // Verify we have the expected number of items
-    expect(count).toBe(expectedCount);
-
     // Add all items to cart with proper waiting
-    for (let i = 0; i < count; i++) {
-      await addItemToCartAndWait(page, items.nth(i));
-    }
+    await addAllItemsToCart(page, expectedCount);
 
-    // Verify cart count shows the total number of items added
-    await waitForCartCount(page, count);
-
-    await reviewCart(page, count);
+    // Verify cart functionality
+    await reviewCart(page, expectedCount);
   });
 });

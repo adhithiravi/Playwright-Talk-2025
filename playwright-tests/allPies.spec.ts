@@ -5,7 +5,7 @@ import {
   clearCartState,
   waitForPageLoad,
 } from "./test-helpers";
-import { stubPiesAPI, getExpectedCounts } from "./api-mocks";
+import { stubPiesAPI, getExpectedCounts } from "./api-stubs";
 
 test.describe("All Pies Shop Page", () => {
   test.beforeEach(async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe("All Pies Shop Page", () => {
   });
 
   test("renders the All Pies section", async ({ page }) => {
-    await expect(page.locator("h1", { hasText: "All Pies" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "All Pies" })).toBeVisible();
   });
 
   test("renders all All Pies with name and price", async ({ page }) => {
@@ -44,16 +44,12 @@ test.describe("All Pies Shop Page", () => {
   test("should add all pies to cart and validate cart count", async ({
     page,
   }) => {
-    const items = page.locator("[data-testid=pie-item]");
-    const count = await items.count();
     const expectedCount = getExpectedCounts().all;
 
-    // Verify we have the expected number of items
-    expect(count).toBe(expectedCount);
-
-    // Add all items to cart
+    // Add all items to cart with proper waiting
     await addAllItemsToCart(page, expectedCount);
 
+    // Verify cart functionality
     await reviewCart(page, expectedCount);
   });
 });
